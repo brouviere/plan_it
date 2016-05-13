@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<!-- BOOTSTRAP Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<!-- CUSTOM STYLE -->
+	<link rel="stylesheet" href="assets/styles/main.css">
+	<!-- FONTAWESOME -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css">
+</head>
+<body ng-app="planeItApp">
+	<div class="container" ng-controller="HomeController">
+		<div class="text-center header ">
+			<h1>Plan'it</h1>
+		</div>
+		<!-- Modal DeleteUser -->
+			<div class="modal fade" aria-labelledby="DeleteUserModal" id="delUser" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Delete</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Do you really want to delete this user ?</p>
+			        <p ng-bind="deletedUserName"></p>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">WOOPS, No !</button>
+			        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="delUser(deletedUserId)">Yes, Delete !</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+		<!-- Modal EditUser -->
+			<div class="modal fade" aria-labelledby="EditUserModal" id="editUser" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Edit</h4>
+			      </div>
+			      <div class="modal-body">
+			        	<form class="user-add" ng-submit="editUser()">
+							<div class="form-group">
+								<label for="lastName">Last Name</label>
+								<input type="text" class="form-control" id="lastName" placeholder="{{ editedUserLastName }}" ng-model="editedUserLastName" required>
+							</div>
+							<div class="form-group">
+								<label for="firstName">First Name</label>
+								<input type="text" class="form-control" id="firstName" placeholder="{{ editedUserFirstName }}" ng-model="editedUserFirstName" required>
+							</div>
+							<!-- <button type="submit" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add this user</button> -->
+						</form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">WOOPS, No !</button>
+			        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="editUser(editedUserId,editedUserLastName,editedUserFirstName)">Yes, Apply !</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+		<!-- Modal DeleteTrip -->
+			<div class="modal fade" aria-labelledby="DeleteTripModal" id="delTrip" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Delete</h4>
+			      </div>
+			      <div class="modal-body">
+			        <p>Do you really want to delete this trip ?</p>
+			        <p>
+			        	From : <span ng-bind="deletedTripCities[0]"></span>
+			        	 To : <span ng-bind="deletedTripCities[1]"></span>
+			        	 (Dep. on : <span ng-bind="deletedTripDates[0]"></span>)
+			        	 (Arr. on : <span ng-bind="deletedTripDates[1]"></span>)
+			        </p>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">WOOPS, No !</button>
+			        <button type="button" class="btn btn-danger" data-dismiss="modal" ng-click="delTrip(deletedTripId)">Yes, Delete !</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+		<!-- Modal EditTrip -->
+			<div class="modal fade" aria-labelledby="EditTripModal" id="editTrip" tabindex="-1" role="dialog">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			        <h4 class="modal-title">Edit Trip</h4>
+			      </div>
+			      <div class="modal-body">
+			        	<form class="trip-add">
+							<!-- Departure -->
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="departureCity">Departure City</label>
+									<input type="text" ng-model="editedDepartureCity" class="form-control" id="departureCity" placeholder="{{ editedDepartureCity }}" required>
+								</div>	
+								<div class="form-group">
+									<label for="arrivalCity">Arrival City</label>
+									<input type="text" ng-model="editedArrivalCity" class="form-control" id="arrivalCity" placeholder="{{ editedArrivalCity }}" required>
+								</div>
+							</div>
+							<!-- Arrival -->
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="departureDate">Departure Date</label>
+									<input type="text" ng-model="editedDepartureDate" class="form-control" id="departureDate" placeholder="{{ editedDepartureDate }}" required>
+								</div>
+								<div class="form-group">
+									<label for="arrivalDate">Arrival Date</label>
+									<input type="text" ng-model="editedArrivalDate" class="form-control" id="arrivalDate" placeholder="{{ editedArrivalDate }}" required>
+								</div>
+							</div>
+						</form>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" class="btn btn-default" data-dismiss="modal">WOOPS, No !</button>
+			        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="editTrip(editedTripId,editedDepartureCity,editedDepartureDate,editedArrivalCity,editedArrivalDate)">Yes, Apply !</button>
+			      </div>
+			    </div><!-- /.modal-content -->
+			  </div><!-- /.modal-dialog -->
+			</div><!-- /.modal -->
+	<!-- NAVIGATION -->		
+		<div>
+			<ul class="nav nav-tabs" role="tablist">
+			  <li role="presentation" class="active"><a href="#users" aria-controls="users" role="tab" data-toggle="tab">Users</a></li>
+			  <li role="presentation"><a href="#trips" aria-controls="trips" role="tab" data-toggle="tab">Trips</a></li>
+			  <li role="presentation"><a href="#flights" aria-controls="flights" role="tab" data-toggle="tab">Flights</a></li>
+			</ul>
+		</div>
+	<!-- CONTENT -->	
+		<div class="row">
+			<div class="tab-content">
+			<!-- USERS -->
+			    <div role="tabpanel" class="tab-pane active" id="users">
+			    <!-- Adding user -->
+					<div class="col-xs-12 col-sm-6 userEditor">
+						<h1>Add an user</h1>
+						<form class="user-add" ng-submit="addUser()">
+							<div class="form-group">
+								<label for="lastName">Last Name</label>
+								<input type="text" ng-model="user.lastName" class="form-control" id="lastName" placeholder="{{ user.lastName }}" required>
+							</div>
+							<div class="form-group">
+								<label for="firstName">First Name</label>
+								<input type="text" ng-model="user.firstName" class="form-control" id="firstName" placeholder="{{ user.firstName }}" required>
+							</div>
+							<button type="submit" class="btn btn-block btn-primary"><i class="fa fa-plus"></i> Add this user</button>
+						</form>
+					</div>
+				<!-- Searching user -->
+					<div class="col-xs-12 col-sm-6 userSearch">
+						<h1>Find an user</h1>
+						<form action="" class="form-inline">
+							<!-- searchByName -->
+							<div class="form-group">
+								<label for="">Last name</label>
+							    <input class="form-control" type="text" ng-model="searchLastName">
+							</div>
+							<!-- searchByAge -->
+							<div class="form-group">
+								<label for="">First name</label>
+							    <input class="form-control" type="text" ng-model="searchFirstName">
+							</div>
+						</form>
+					</div>
+				<!-- User List -->	
+					<div class="col-xs-12 userViewer">
+						<h1>User list</h1>
+						<div class="userList">
+							<div class="userListHeading">
+								<div class="col-xs-1"><h3>#</h3></div>
+								<div class="col-xs-3"><h3>Last Name</h3></div>
+								<div class="col-xs-3"><h3>First Name</h3></div>
+								<div class="col-xs-5"><h3>Actions</h3></div>
+							</div>
+							<div ng-repeat="user in users | filter:{'lastName':searchLastName, 'firstName':searchFirstName} track by user.id">
+								<div class="col-xs-1"><p ng-bind="user.id"></p></div>
+								<div class="col-xs-3"><p ng-bind="user.lastName"></p></div>
+								<div class="col-xs-3"><p ng-bind="user.firstName"></p></div>
+								<div class="col-xs-5">
+									<button type="" class="btn btn-warning" data-toggle="modal" data-target="#editUser" ng-click="editThisUser(user.id,user.lastName,user.firstName)">Edit</button>
+									<button type="" class="btn btn-danger" data-toggle="modal" data-target="#delUser" ng-click="deleteThisUser(user.id,user.lastName,user.firstName)">Delete</button>
+									<!-- <button type="" class="btn btn-danger" data-toggle="modal" data-target="#delUser">Delete</button> -->
+									<!-- <button type="" class="btn btn-danger" ng-click="delUser($index)">Delete</button> -->
+								</div>
+							</div>					
+						</div>
+						<!-- <button class="btn btn-block btn-primary" ng-click=toJson()>To JSON</button> -->
+					</div>	
+			    </div>
+			<!-- TRIPS --> 
+			    <div role="tabpanel" class="tab-pane" id="trips">
+			    <!-- Adding trip -->
+			    	<div class="col-xs-12 col-sm-6 tripEditor">
+						<h1>Add a trip</h1>
+						<form class="trip-add" ng-submit="addTrip()">
+							<!-- Departure -->
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="departureCity">Departure City</label>
+									<input type="text" ng-model="trip.departureCity" class="form-control" id="departureCity" placeholder="{{ trip.departureCity }}" required>
+								</div>	
+								<div class="form-group">
+									<label for="arrivalCity">Arrival City</label>
+									<input type="text" ng-model="trip.arrivalCity" class="form-control" id="arrivalCity" placeholder="{{ trip.arrivalCity }}" required>
+								</div>
+							</div>
+							<!-- Arrival -->
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label for="departureDate">Departure Date</label>
+									<input type="text" ng-model="trip.departureDate" class="form-control" id="departureDate" placeholder="{{ trip.departureDate }}" required>
+								</div>
+								<div class="form-group">
+									<label for="arrivalDate">Arrival Date</label>
+									<input type="text" ng-model="trip.arrivalDate" class="form-control" id="arrivalDate" placeholder="{{ trip.arrivalDate }}" required>
+								</div>
+							</div>
+							<button type="submit" class="btn btn-block btn-warning"><i class="fa fa-plus"></i> Add this trip</button>	
+						</form>
+					</div>
+				<!-- Trip list -->		
+					<div class="col-xs-12 tripViewer">
+						<h1>Trip list</h1>
+						<div class="tripList">
+							<div class="tripListHeading">
+								<div class="col-xs-1"><h3>#</h3></div>
+								<div class="col-xs-2"><h3>Departure City</h3></div>
+								<div class="col-xs-2"><h3>Departure Date</h3></div>
+								<div class="col-xs-2"><h3>Arrival City</h3></div>
+								<div class="col-xs-2"><h3>Arrival Date</h3></div>
+								<div class="col-xs-3"><h3>Actions</h3></div>
+							</div>
+							<div ng-repeat="trip in trips track by $index" class="tripListContent">
+								<div class="col-xs-1"><p ng-bind="trip.id"></p></div>
+								<div class="col-xs-2"><p ng-bind="trip.departureCity"></p></div>
+								<div class="col-xs-2"><p ng-bind="trip.departureDate"></p></div>
+								<div class="col-xs-2"><p ng-bind="trip.arrivalCity"></p></div>
+								<div class="col-xs-2"><p ng-bind="trip.arrivalDate"></p></div>
+								<div class="col-xs-3">
+									<button type="" class="btn btn-warning" data-toggle="modal" data-target="#editTrip" ng-click="editThisTrip(trip.id,trip.departureCity,trip.departureDate,trip.arrivalCity,trip.arrivalDate)"><i class="fa fa-pencil"></i></button>
+									<button type="" class="btn btn-danger" data-toggle="modal" data-target="#delTrip" ng-click="deleteThisTrip(trip.id,trip.departureCity,trip.departureDate,trip.arrivalCity,trip.arrivalDate)"><i class="fa fa-times"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+			    </div>
+			<!-- FLIGHTS -->
+			    <div role="tabpanel" class="tab-pane" id="flights">
+			    <!-- Add flight -->
+			    	<div class="col-xs-12 col-sm-6 flightEditor">
+						<h1>Add a flight</h1>
+						<form class="trip-add">
+						<!-- Choose a trip -->
+							<div class="col-xs-6">
+								<div class="form-group">
+									<label for="tripSelect"> Select a trip: </label>
+									<select name="tripSelect" id="tripSelect" ng-model="selectedTrip">
+										<option ng-repeat="trip in trips" value="{{ trip }}">{{ trip.info }}</option>
+									</select>
+								</div>
+								<p ng-bind="selectedTrip"></p>
+							</div>
+						<!-- Choose an user -->
+							<div class="col-xs-6">
+								<div class="form-group">
+									<label for="userSelect"> Select an user: </label>
+									<select name="userSelect" id="userSelect" ng-model="selectedUser">
+										<option ng-repeat="user in users" value="{{ user }}">{{ user.name }}</option>
+									</select>
+								</div>
+								<p ng-bind="selectedUser"></p>
+							</div>
+							<button type="" class="btn btn-block btn-warning" ng-click="addFlight(selectedTrip,selectedUser)"><i class="fa fa-plus"></i> Add this trip</button>	
+						</form>
+					</div>
+			    </div>
+			</div>
+		</div>		
+	</div>
+	<!-- JQUERY -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<!-- BOOTSTRAP Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+	<!--  Angular JS-->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+	<!-- CORE -->
+	<script src="assets/scripts/core/app.js"></script>
+	<!-- HOME CONTROLLER -->
+	<script src="assets/scripts/controllers/home-controller.js"></script>
+</body>
+</html>
